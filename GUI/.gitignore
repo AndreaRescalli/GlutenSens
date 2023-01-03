@@ -1,26 +1,3 @@
-### PSoCCreator ###
-# Project Settings
-*.cywrk.*
-*.cyprj.*
-*.cydsn/*.cyprj.*
-
-# Generated Assets and Resources
-Debug/
-Docs/
-Release/
-Export/
-*/codegentemp
-*/Generated_Source
-*_datasheet.pdf
-*_timing.html
-*.cycdx
-*.cyfit
-*.rpt
-*.svd
-*.log
-.*DS_Store
-
-
 ### Python ###
 # Editors
 .vscode/
