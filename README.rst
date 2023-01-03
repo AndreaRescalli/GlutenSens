@@ -9,8 +9,8 @@ during my PhD.
 
 The code is organzied in two directories: 
 
-* **GlutenApp**, which contains the code for a PyQt5-based graphical user interface; for more information check the respective README 
-  file and the `documentation <https://glutensense.readthedocs.io/en/latest/>`_;
+* **GlutenApp**, which contains the code for a PyQt5-based graphical user interface; for more information check 
+  the `documentation <https://glutensense.readthedocs.io/en/latest/>`_;
 
 * **PSoC_code**, which contains the firmware of the microcontroller (a PSoC-5LP was used).
 
