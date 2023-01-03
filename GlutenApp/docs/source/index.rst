@@ -5,7 +5,8 @@
 
 Welcome to GlutenApp's documentation!
 =========================================
-This repository holds the code for **GlutenApp**, a PyQt5-based graphical user interface specifically designed to work 
+This page holds the documentation of the code for `GlutenApp <https://github.com/AndreaRescalli/GlutenSense/tree/master/GlutenApp>`_, 
+a PyQt5-based graphical user interface specifically designed to work 
 with `GlutenSense <https://github.com/AndreaRescalli/GlutenSense/tree/master/PSoC_code>`_, a microcontroller-based, 
 portable instrument for easy gluten-free check of food samples developed during my PhD.
 
