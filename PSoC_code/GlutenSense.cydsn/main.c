@@ -18,7 +18,7 @@
 
 #include "project.h"
 #include "Interrupts.h"
-#include "UART_COM.h"
+#include "Commands.h"
 
 
 
@@ -64,6 +64,7 @@ int main(void) {
     // Init flags and variables
     state           = IDLE;   
     flag_rx         = 0;
+    char rx         = 0;
     flag_timer_5    = 0;
     count_100Hz     = 0;    
     flag_100Hz      = 0;
@@ -76,7 +77,14 @@ int main(void) {
 
     for(;;) {
         
-        /* Place your application code here. */
+        if(flag_rx) {
+            flag_rx = 0;
+            rx = UART_ReadRxData();
+            
+            // Handle possible user requested commands
+            Cmd_InvokeCommand(rx, commands);
+            
+        }
         
     } // end for loop
     

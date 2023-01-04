@@ -254,8 +254,10 @@
       <Data key="2d3e9028-4e06-4b53-920c-e81d76116260" value="Pin_IDAC_sense" />
       <Data key="5f13acc7-7ce3-4765-978b-69c6184c352e" value="Pin_cal2" />
       <Data key="712d02d9-bc53-4b97-ba0c-66a23d3a193f" value="Pin_sense2" />
+      <Data key="1425177d-0d0e-4468-8bcc-e638e5509a9b" value="Rx_1" />
       <Data key="b79bb872-9252-4c8e-b9d7-cd2ee1428d92" value="Pin_cal1" />
       <Data key="e851a3b9-efb8-48be-bbb8-b303b216c393" value="Debug_LED" />
+      <Data key="ed092b9b-d398-4703-be89-cebf998501f6" value="Tx_1" />
     </Group>
   </Group>
   <Group key="EEPROM">
@@ -3357,6 +3359,11 @@
         <Data key="Port Format" value="2,5" />
       </Group>
     </Group>
+    <Group key="1425177d-0d0e-4468-8bcc-e638e5509a9b">
+      <Group key="0">
+        <Data key="Port Format" value="12,6" />
+      </Group>
+    </Group>
     <Group key="b79bb872-9252-4c8e-b9d7-cd2ee1428d92">
       <Group key="0">
         <Data key="Port Format" value="2,7" />
@@ -3365,6 +3372,11 @@
     <Group key="e851a3b9-efb8-48be-bbb8-b303b216c393">
       <Group key="0">
         <Data key="Port Format" value="2,1" />
+      </Group>
+    </Group>
+    <Group key="ed092b9b-d398-4703-be89-cebf998501f6">
+      <Group key="0">
+        <Data key="Port Format" value="12,7" />
       </Group>
     </Group>
   </Group>

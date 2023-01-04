@@ -17,7 +17,7 @@
     // =============================================
     
     #include "cytypes.h"
-    #include "UART_COM.h"
+    #include "Commands_Defines.h"
     #include "project.h"
     
     
