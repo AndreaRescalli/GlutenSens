@@ -21,7 +21,7 @@
 /**
  * \brief UART ISR.
  * 
- * ISR of the UART that is used to pilot remotely the device based on commands recieved
+ * ISR of the UART that is used to pilot remotely the device based on commands recieved.
 */
 CY_ISR(Custom_ISR_RX) {
     
@@ -41,16 +41,16 @@ CY_ISR(Custom_ISR_RX) {
 */
 CY_ISR(Custom_ISR_TIMER) {
     
-    flag_timer_5 = 1;
-    count_100Hz += 1;
-    
-    if((count_100Hz%2) == 0) {
-        flag_100Hz  = 1;
-        count_100Hz = 0;
-    }
-    
     // Read timer status to bring interrupt line low
     Timer_ReadStatusRegister();
+    
+    flag_timer   = 1;
+    count_fs += 1;
+    
+    if((count_fs%REST) == 0) {
+        flag_fs  = 1;
+        count_fs = 0;
+    }    
     
 } // end ISR_TIMER
 
@@ -66,11 +66,11 @@ void Reset_TIMER(void) {
     
     // Reset the timer
     Timer_Stop();
-    Timer_WriteCounter(4);
+    Timer_WriteCounter(TIMER_PERIOD-1);
     Timer_Enable();
-    flag_timer_5   = 0;
-    flag_100Hz     = 0;
-    count_100Hz    = 0;
+    flag_timer     = 0;
+    flag_fs     = 0;
+    count_fs    = 0;
     
 } // end Reset_TIMER
 

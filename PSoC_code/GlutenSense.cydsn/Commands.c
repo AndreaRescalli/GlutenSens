@@ -17,6 +17,7 @@
 
 
 
+
 /**
 *   \brief Send connection string.
 *
@@ -56,14 +57,18 @@ void Cmd_StopMeasure(void) {
 
 
 /**
-*   \brief Toggle on-board blue LED.
+*   \brief Send reset buffer.
 *
-*   This function toggles the on-board blue LED 
-*   on demand.
+*   This function sends the reset buffer 
+*   to inform the GUI on sampling frequency.
 */
-void Cmd_LEDTest(void) {
-    uint8_t status = Debug_LED_Read();
-    Debug_LED_Write(!status);
+void Cmd_SendResetBuffer(void) {
+    uint8_t reset_buffer[RESET_SIZE] = {0};
+    reset_buffer[0]                  = HEADER_RESET;
+    reset_buffer[1]                  = FS;
+    reset_buffer[RESET_SIZE-1]       = TAIL_RESET;
+    
+    UART_PutArray(reset_buffer, RESET_SIZE);
 }
 
 

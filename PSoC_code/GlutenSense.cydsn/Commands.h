@@ -56,12 +56,12 @@
     
     
     /**
-    *   \brief Toggle on-board blue LED.
+    *   \brief Send reset buffer.
     *
-    *   This function toggles the on-board blue LED 
-    *   on demand.
+    *   This function sends the reset buffer 
+    *   to inform the GUI on sampling frequency.
     */
-    void Cmd_LEDTest(void);
+    void Cmd_SendResetBuffer(void);
     
     
     /**
@@ -89,10 +89,10 @@
     *   by the user via serial communication.
     */
     static const struct commandStruct commands[] = {
-        {'v', &Cmd_SendConnString, "Enter v to send connection string.\r\n"},
-        {'r', &Cmd_StartMeasure, "Enter r to start measurement.\r\n"},
+        {'c', &Cmd_SendConnString, "Enter c to send connection string.\r\n"},
+        {'m', &Cmd_StartMeasure, "Enter m to start measurement.\r\n"},
         {'s', &Cmd_StopMeasure, "Enter s to stop measurement.\r\n"},
-        {'l', &Cmd_LEDTest, "Enter l to toggle built-in blue LED.\r\n"},
+        {'r', &Cmd_SendResetBuffer, "Enter r to send reset info.\r\n"},
         {'h', &Cmd_PrintHelp, "Enter h to list commands.\r\n"},
         {' ',0,""} // End of table indicator
     };  

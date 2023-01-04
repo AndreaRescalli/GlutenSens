@@ -38,13 +38,6 @@
 
 
 
-// =============================================
-//                    GLOBALS
-// =============================================
-
-
-
-
 int main(void) {
     
     CyGlobalIntEnable; /* Enable global interrupts. */
@@ -62,17 +55,28 @@ int main(void) {
     
     
     // Init flags and variables
-    state           = IDLE;   
-    flag_rx         = 0;
-    char rx         = 0;
-    flag_timer_5    = 0;
-    count_100Hz     = 0;    
-    flag_100Hz      = 0;
+    state                   = IDLE;   
+    flag_rx                 = 0;
+    char rx                 = 0;
+    flag_timer              = 0;
+    count_fs                = 0;    
+    flag_fs                 = 0;
+    
+    int32_t Vref            = 0;
+    int32_t Vsense          = 0;    
+    double R_sense          = 0.0;
+    uint32_t integer_part   = 0;
+    uint16_t decimal_part   = 0;
+    
+    uint8_t resistance_buffer[RESIST_SIZE]  = {0};
+    resistance_buffer[0]                    = HEADER_PSOC_R_MEAS;
+    resistance_buffer[RESIST_SIZE-1]        = TAIL_MEAS_PACKETS;
     
     
     // Init ISRs
     ISR_RX_StartEx(Custom_ISR_RX);
     ISR_TIMER_StartEx(Custom_ISR_TIMER);
+    
 
 
     for(;;) {
@@ -84,6 +88,22 @@ int main(void) {
             // Handle possible user requested commands
             Cmd_InvokeCommand(rx, commands);
             
+        }
+        
+        switch(state) {
+            case IDLE:
+                Debug_LED_Write(LED_OFF);
+                break;
+            case SENSING:
+                Debug_LED_Write(LED_ON);
+                if(flag_fs) {
+                    flag_fs = 0;
+                    
+                    // acquire data                
+                }
+                break;
+            default:
+                break;
         }
         
     } // end for loop

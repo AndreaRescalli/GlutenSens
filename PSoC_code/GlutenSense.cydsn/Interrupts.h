@@ -26,13 +26,13 @@
     //               GLOBALS & FLAGS
     // =============================================
     
-    volatile uint8_t state;         ///< Keeps track of the state we're in
+    volatile uint8_t state;             ///< Keeps track of the state we're in
      
-    volatile uint8_t flag_rx;       ///< Flag that tells a byte has been recieved
+    volatile uint8_t flag_rx;           ///< Flag that tells a byte has been recieved
     
-    volatile uint8_t flag_timer_5;      ///< Flag that tells 5ms have passed
-    volatile uint8_t flag_100Hz;        ///< Flag that tells 1 sec have passed
-    volatile uint8_t count_100Hz;       ///< Counter to keep track of each 10ms passed
+    volatile uint8_t flag_timer;        ///< Flag that tells a timer overflow has occurred
+    volatile uint8_t flag_fs;           ///< Flag that tells it's time to acquire a sample
+    volatile uint8_t count_fs;          ///< Counter to keep track of each timer overflow
     
     
     
@@ -43,7 +43,7 @@
     /**
      * \brief UART ISR.
      * 
-     * ISR of the UART that is used to pilot remotely the device based on commands recieved
+     * ISR of the UART that is used to pilot remotely the device based on commands recieved.
     */    
     CY_ISR_PROTO(Custom_ISR_RX);
     
