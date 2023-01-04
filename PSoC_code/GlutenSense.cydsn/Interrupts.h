@@ -23,22 +23,6 @@
     
     
     // =============================================
-    //                 STATE MACROS
-    // =============================================
-    
-    /**
-    *   \brief Idle state: wait for user input.
-    */    
-    #define IDLE    0
-    
-    /**
-    *   \brief Calibration state: potentiometer setting.
-    */    
-    #define SENSING 1
-    
-
-    
-    // =============================================
     //               GLOBALS & FLAGS
     // =============================================
     

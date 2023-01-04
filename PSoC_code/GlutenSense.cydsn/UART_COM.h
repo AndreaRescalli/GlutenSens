@@ -26,6 +26,9 @@
     //                    MACROS
     // =============================================
     
+    #define IDLE                0              ///< Idle state, no operation needed, wait for user
+    #define SENSING             1              ///< Measure resistance of sensor
+    
     #define DATA_SIZE           1+32/8+16/8+1  ///< Size of the measurement buffer that will be sent to the GUI
     #define RESET_SIZE          1+3+1          ///< Size of the reset buffer sent to GUI. header+sr_info+tail
     #define RESIST_SIZE         1+32/8+16/8+1  ///< Size of resistance buffer (load value)
