@@ -73,6 +73,14 @@ class MainWindow(QMainWindow):
         # create thread handler
         self.threadpool = QtCore.QThreadPool()
 
+        #Visualization
+        #self.buffer     = []
+        #self.n_ms       = 1000
+        #self.timer      = QtCore.QTimer()
+        #self.timer.setInterval(self.n_ms)
+        #self.timer.timeout.connect(self.update_plot_data)
+        #self.timer.start()
+
         self.serialscan()
         self.initUI()
 
@@ -85,6 +93,11 @@ class MainWindow(QMainWindow):
         """!
         @brief Set up the graphical interface structure.
         """
+
+        # graphical visualization
+        #self.dataUpdate     = False
+
+
         # status bar
         self.status_bar = QStatusBar(self)
         self.setStatusBar(self.status_bar)
@@ -279,6 +292,7 @@ class MainWindow(QMainWindow):
             self.read_worker.send(wrk.PSOC_RES_CMD)
             logger.info("PSoC resistance measurement started")
             self.stop_stream_btn.setChecked(False)
+            self.start = time.time()
 
 
     @QtCore.pyqtSlot(bool)
@@ -298,6 +312,10 @@ class MainWindow(QMainWindow):
             logger.info("Measurement stopped")
             if self.res_stream_btn.isChecked():
                 csv_exporter.export_psoc_res_data()
+                
+            self.stop = time.time()
+            t = self.stop-self.start
+            logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
 
             # Reset the dictionaries
             csv_exporter.PSoC_res_dict.update({
@@ -307,6 +325,7 @@ class MainWindow(QMainWindow):
             self.res_stream_btn.setChecked(False)
             self.res_stream_btn.setDisabled(False)
 
+            
 
     def send_input(self):
         """!
@@ -411,6 +430,21 @@ class MainWindow(QMainWindow):
         elif packet_type == "PSoC res measurement":
             self.graph_tab.update_plot(data[0], self.graph_tab.x_psoc_r, self.graph_tab.y_psoc_r, self.graph_tab.psoc_rLoad_line)
             csv_exporter.PSoC_res_dict['Resistance'].append(data[0])
+            #self.buffer.append(data[0])
+            #self.graph_tab.y_psoc_r.append(self.graph_tab.y_psoc_r.pop(0))
+            #self.graph_tab.y_psoc_r[-1] = data[0]
+            #self.dataUpdate = True
+
+
+    def update_plot_data(self):
+        if len(self.buffer)>0:
+            if self.dataUpdate:
+                self.graph_tab.psoc_rLoad_line.setData(self.graph_tab.x_psoc_r,self.graph_tab.y_psoc_r)
+                logger.info("num samples: {}".format(len(self.buffer)))
+                self.buffer = []
+                self.dataUpdated = False
+        else:
+            pass
 
 
     def check_serialport_status(self, port_name, status):

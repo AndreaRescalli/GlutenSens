@@ -34,6 +34,11 @@ PSOC_RES_CMD = 'm'
 """
 STOP_STREAM_CMD = 's'
 
+"""!
+@brief Command to retrieve info.
+"""
+RESET_CMD = 'r'
+
 
 
 ##############
@@ -110,7 +115,7 @@ TAIL_RESET = 0x0F
 """!
 @brief PSoC resistance measurement display rate in Hz.
 """
-PSOC_RES_SAMPLE_RATE = 100 # for now is default, should be retrieved upon connection
+PSOC_RES_SAMPLE_RATE = 40 # for now is default, should be retrieved upon connection
 
 
 
@@ -346,8 +351,6 @@ class ReadWorker(QRunnable):
         @brief Estabilish connection with desired serial port and collect data.
         """
         logger.trace("Reading thread initiated.")
-        global FDC1004Q_SAMPLE_RATE
-        global PSOC_CAP_SAMPLE_RATE
         global PSOC_RES_SAMPLE_RATE
         try:
             self.port = serial.Serial(port=self.port_name, baudrate=BAUDRATE,
@@ -355,6 +358,7 @@ class ReadWorker(QRunnable):
             if self.port.is_open:
                 self.signals.status.emit(self.port_name, 1)
                 logger.info("Succesfully connected to port {}.".format(self.port_name))
+                self.port.write(RESET_CMD.encode('utf-8'))
         except serial.SerialException:
             self.signals.status.emit(self.port_name, 0)
             logger.exception("Error during setup of port {}.".format(self.port_name))
@@ -400,10 +404,10 @@ class ReadWorker(QRunnable):
                             info_tail = struct.unpack('B', info_tail)[0]
                             if (info_tail == TAIL_RESET):
                                 PSOC_RES_SAMPLE_RATE = info_raw
-                                logger.debug("PSoC res sample rate changed to {} Hz.".format(PSOC_RES_SAMPLE_RATE))
+                                logger.info("PSoC res sample rate changed to {} Hz.".format(PSOC_RES_SAMPLE_RATE))
                                 self.signals.data.emit(self.packet_type,[0])
                                 self.read_state = 0
-                time.sleep(0.001)
+                #time.sleep(0.001)
             except serial.SerialException:
                 self.signals.status.emit(self.port_name, 2)
                 logger.exception("Cannot communicate with port {}. Please check the connection and try again.".format(self.port_name))

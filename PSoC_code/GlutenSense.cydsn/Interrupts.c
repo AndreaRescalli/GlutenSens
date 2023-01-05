@@ -49,7 +49,7 @@ CY_ISR(Custom_ISR_TIMER) {
     flag_timer  = 1;
     count_fs   += 1;
             
-    if((count_fs%2) == 0) {
+    if((count_fs%5) == 0) {
         flag_fs  = 1;
         count_fs = 0;
     }    

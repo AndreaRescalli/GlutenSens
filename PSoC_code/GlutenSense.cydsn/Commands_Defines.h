@@ -20,7 +20,7 @@
     #define SENSING             1              ///< Measure resistance of sensor
     
     #define TIMER_PERIOD        5              ///< Period of the timer, with a 1kHz clock [ms]
-    #define FS                  100            ///< Desired sampling frequency [Hz]
+    #define FS                  40             ///< Desired sampling frequency [Hz]
     
     #define DATA_SIZE           1+32/8+16/8+1  ///< Size of the measurement buffer that will be sent to the GUI
     #define RESET_SIZE          1+1+1          ///< Size of the reset buffer sent to GUI. header+sr_info+tail

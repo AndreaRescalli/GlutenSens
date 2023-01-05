@@ -49,7 +49,7 @@ class MyTabWidget(QWidget):
         # Plot settings
             # Axes
         self.n_seconds = 30 # Number of seconds to display
-        self.x_psoc_r, self.y_psoc_r, self.y_psoc_pot = self.define_axes(wrk.PSOC_RES_SAMPLE_RATE)
+        self.x_psoc_r, self.y_psoc_r = self.define_axes(wrk.PSOC_RES_SAMPLE_RATE)
             # Add grid
         self.psoc_r_graph.showGrid(x=True, y=True)
             # Set background color
@@ -102,7 +102,7 @@ class MyTabWidget(QWidget):
         """
         if graph == self.psoc_r_graph:
             # Re-define axes
-            self.x_psoc_r, self.y_psoc_r, self.y_psoc_pot = self.define_axes(wrk.PSOC_RES_SAMPLE_RATE)
+            self.x_psoc_r, self.y_psoc_r = self.define_axes(wrk.PSOC_RES_SAMPLE_RATE)
             # Adjust lines
             self.psoc_rLoad_line.setData(self.x_psoc_r, self.y_psoc_r)
 
@@ -122,8 +122,4 @@ class MyTabWidget(QWidget):
             x_axis[j] = -self.n_seconds + j * time_between_points
         y_axis = [0 for y in range(-n_points, 0)]
 
-        if sample_rate == wrk.PSOC_RES_SAMPLE_RATE:
-            y_axis_2 = [0 for y in range(-n_points, 0)]
-            return x_axis, y_axis,y_axis_2
-        else:
-            return x_axis, y_axis     
+        return x_axis, y_axis     
