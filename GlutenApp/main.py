@@ -73,14 +73,6 @@ class MainWindow(QMainWindow):
         # create thread handler
         self.threadpool = QtCore.QThreadPool()
 
-        #Visualization
-        #self.buffer     = []
-        #self.n_ms       = 1000
-        #self.timer      = QtCore.QTimer()
-        #self.timer.setInterval(self.n_ms)
-        #self.timer.timeout.connect(self.update_plot_data)
-        #self.timer.start()
-
         self.serialscan()
         self.initUI()
 
@@ -93,10 +85,6 @@ class MainWindow(QMainWindow):
         """!
         @brief Set up the graphical interface structure.
         """
-
-        # graphical visualization
-        #self.dataUpdate     = False
-
 
         # status bar
         self.status_bar = QStatusBar(self)
@@ -312,7 +300,7 @@ class MainWindow(QMainWindow):
             logger.info("Measurement stopped")
             if self.res_stream_btn.isChecked():
                 csv_exporter.export_psoc_res_data()
-                
+
             self.stop = time.time()
             t = self.stop-self.start
             logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
@@ -430,10 +418,6 @@ class MainWindow(QMainWindow):
         elif packet_type == "PSoC res measurement":
             self.graph_tab.update_plot(data[0], self.graph_tab.x_psoc_r, self.graph_tab.y_psoc_r, self.graph_tab.psoc_rLoad_line)
             csv_exporter.PSoC_res_dict['Resistance'].append(data[0])
-            #self.buffer.append(data[0])
-            #self.graph_tab.y_psoc_r.append(self.graph_tab.y_psoc_r.pop(0))
-            #self.graph_tab.y_psoc_r[-1] = data[0]
-            #self.dataUpdate = True
 
 
     def update_plot_data(self):
