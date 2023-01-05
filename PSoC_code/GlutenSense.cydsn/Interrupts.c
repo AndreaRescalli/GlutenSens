@@ -14,8 +14,10 @@
 // =============================================
 
 #include "Interrupts.h"
+#include <stdio.h>
 
 
+char msg[50] = {};
 
 
 /**
@@ -44,10 +46,10 @@ CY_ISR(Custom_ISR_TIMER) {
     // Read timer status to bring interrupt line low
     Timer_ReadStatusRegister();
     
-    flag_timer   = 1;
-    count_fs += 1;
-    
-    if((count_fs%REST) == 0) {
+    flag_timer  = 1;
+    count_fs   += 1;
+            
+    if((count_fs%2) == 0) {
         flag_fs  = 1;
         count_fs = 0;
     }    
@@ -68,7 +70,7 @@ void Reset_TIMER(void) {
     Timer_Stop();
     Timer_WriteCounter(TIMER_PERIOD-1);
     Timer_Enable();
-    flag_timer     = 0;
+    flag_timer  = 0;
     flag_fs     = 0;
     count_fs    = 0;
     
