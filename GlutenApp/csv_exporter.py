@@ -52,7 +52,7 @@ def export_psoc_res_data():
         if not os.path.exists("Data"):
             os.mkdir("Data")
             
-        file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")+'_'+id+'_'+'PSoC-res'
+        file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")+'_'+id
         path = os.path.join('Data',file_name+'.csv')
 
         sample_rate = str(wrk.PSOC_RES_SAMPLE_RATE)

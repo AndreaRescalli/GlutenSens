@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, 
+    QPushButton,
     QTabWidget, 
     QVBoxLayout,  
     QTextEdit
@@ -8,6 +9,8 @@ from PyQt5.QtWidgets import (
 import pyqtgraph as pg
 from pyqtgraph import PlotWidget, plot
 from pyqtgraph.functions import SI_PREFIXES_ASCII
+
+from loguru import logger
 
 import serial_workers as wrk
 
@@ -40,9 +43,14 @@ class MyTabWidget(QWidget):
         self.tab1.layout.addWidget(self.output_window)
         self.tab1.setLayout(self.tab1.layout)
 
-        # Create fourth tab
+        # Create second tab
         self.tab2.layout = QVBoxLayout(self)
         self.psoc_r_graph = PlotWidget()
+        self.clear_plot_btn = QPushButton(
+            text="Clear plot",
+        )
+        self.clear_plot_btn.clicked.connect(lambda state,plot=self.psoc_r_graph: self.clear_plot(state, plot))
+        self.tab2.layout.addWidget(self.clear_plot_btn)
         self.tab2.layout.addWidget(self.psoc_r_graph)
         self.tab2.setLayout(self.tab2.layout)
 
@@ -92,7 +100,7 @@ class MyTabWidget(QWidget):
         plot_line.setData(x_array, y_array)
 
 
-    def clear_plot(self, graph):
+    def clear_plot(self, state, graph):
         """!
         @brief Clear graph to account for sample rate changes.
 
@@ -105,6 +113,7 @@ class MyTabWidget(QWidget):
             self.x_psoc_r, self.y_psoc_r = self.define_axes(wrk.PSOC_RES_SAMPLE_RATE)
             # Adjust lines
             self.psoc_rLoad_line.setData(self.x_psoc_r, self.y_psoc_r)
+            logger.debug("Plot cleared.")
 
 
     def define_axes(self, sample_rate):

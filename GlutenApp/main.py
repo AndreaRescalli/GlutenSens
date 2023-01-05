@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         # title and geometry
-        self.setWindowTitle("GUI")
+        self.setWindowTitle("GlutenSense")
         width = 1000
         height = 800
         self.setMinimumSize(width, height)
@@ -113,11 +113,11 @@ class MainWindow(QMainWindow):
         self.file_toolbar.addSeparator()
         self.file_toolbar.addWidget(QLabel("CSV ID: "))
         self.id_txt = QLineEdit(
-            maxLength=5,
+            maxLength=10,
             textEdited=self.change_csv_id
         )
-        self.id_txt.setFixedWidth(60)
-        self.id_txt.setPlaceholderText("max 5 char")
+        self.id_txt.setFixedWidth(80)
+        self.id_txt.setPlaceholderText("max 10 char")
         self.file_toolbar.addWidget(self.id_txt)
                 # Icon for data export to csv
         self.file_toolbar.addSeparator()
@@ -280,7 +280,8 @@ class MainWindow(QMainWindow):
             self.read_worker.send(wrk.PSOC_RES_CMD)
             logger.info("PSoC resistance measurement started")
             self.stop_stream_btn.setChecked(False)
-            self.start = time.time()
+            self.graph_tab.clear_plot_btn.setDisabled(True)
+            #self.start = time.time()
 
 
     @QtCore.pyqtSlot(bool)
@@ -301,9 +302,9 @@ class MainWindow(QMainWindow):
             if self.res_stream_btn.isChecked():
                 csv_exporter.export_psoc_res_data()
 
-            self.stop = time.time()
-            t = self.stop-self.start
-            logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
+            #self.stop = time.time()
+            #t = self.stop-self.start
+            #logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
 
             # Reset the dictionaries
             csv_exporter.PSoC_res_dict.update({
@@ -312,6 +313,7 @@ class MainWindow(QMainWindow):
             
             self.res_stream_btn.setChecked(False)
             self.res_stream_btn.setDisabled(False)
+            self.graph_tab.clear_plot_btn.setDisabled(False)
 
             
 
@@ -402,8 +404,8 @@ class MainWindow(QMainWindow):
         Update the output_window widget to display what has been read on serial port.
         It also updates the appropriate plots based on type of data read.
         """
-        if packet_type != "Potentiometer calibration":
-            # Calibration data have their own visualization window (inside PotCalDialog)
+        if packet_type != "Reset info":
+            # Reset info is handled differently
             for i in range(0, len(data)):
                 self.graph_tab.output_window.append(str(data[i]))
                 self.graph_tab.output_window.moveCursor(QtGui.QTextCursor.End)
@@ -414,7 +416,7 @@ class MainWindow(QMainWindow):
             self.res_stream_btn.setDisabled(False)
             self.stop_stream_btn.setChecked(False)
             # clear plots
-            self.graph_tab.clear_plot(self.graph_tab.psoc_r_graph)
+            self.graph_tab.clear_plot(1, self.graph_tab.psoc_r_graph) # 1 is just random to account for state parameter
         elif packet_type == "PSoC res measurement":
             self.graph_tab.update_plot(data[0], self.graph_tab.x_psoc_r, self.graph_tab.y_psoc_r, self.graph_tab.psoc_rLoad_line)
             csv_exporter.PSoC_res_dict['Resistance'].append(data[0])
