@@ -17,8 +17,6 @@ portable instrument for easy gluten-free check of food samples developed during 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   api
-
 
 
 Indices and tables
