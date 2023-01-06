@@ -31,14 +31,14 @@ int32_t measure_Voltage(uint8_t ADC_channel) {
     
     // Variables
     int32_t Voltage = 0;
-    int32_t Voffset = 0;
+    //int32_t Voffset = 0;
     
     // Selection of the appropriate channel for V measurement
     IDAC_Start();
     ADC_MUX_FastSelect(ADC_channel);
     
     // Initially the IDAC has 0 mA in output --> compute Voffset
-    Voffset = measure_Voffset();
+    //Voffset = measure_Voffset();
     
     // Now we can compute the voltage across the desired resistor
     // by setting IDAC current to 50 uA
@@ -53,7 +53,7 @@ int32_t measure_Voltage(uint8_t ADC_channel) {
     IDAC_Stop();
     
     // Account for the offset by subtracting Voffset from Voltage
-    Voltage = Voltage - Voffset;
+    Voltage = Voltage; //- Voffset;
     
 
     return Voltage;

@@ -115,7 +115,7 @@ TAIL_RESET = 0x0F
 """!
 @brief PSoC resistance measurement display rate in Hz.
 """
-PSOC_RES_SAMPLE_RATE = 40 # for now is default, should be retrieved upon connection
+PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection and at start of measurement to be sure
 
 
 

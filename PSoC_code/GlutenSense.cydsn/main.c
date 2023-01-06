@@ -63,13 +63,16 @@ int main(void) {
     count_fs                = 0;    
     flag_fs                 = 0;
     
+    
+    int32_t Voffset_ref     = 0;
+    int32_t Voffset_sense   = 0;
     int32_t Vref            = 0;
     int32_t Vsense          = 0;    
     double R_sense          = 0.0;
     uint32_t integer_part   = 0;
     uint16_t decimal_part   = 0;
     
-    char msg[50] = {};
+    //char msg[50] = {};
     
     uint8_t resistance_buffer[RESIST_SIZE]  = {0};
     resistance_buffer[0]                    = HEADER_PSOC_R_MEAS;
@@ -93,6 +96,16 @@ int main(void) {
         }        
             
         if(state == SENSING) {
+            
+            IDAC_Start();
+            ADC_MUX_FastSelect(REF_CH);
+            Voffset_ref   = measure_Voffset();
+            ADC_MUX_FastSelect(SENSE_CH);
+            Voffset_sense = measure_Voffset();
+            
+            Cmd_SendResetBuffer();
+            
+            
             while(state == SENSING) {
                 if(flag_fs) {
                     flag_fs = 0;
@@ -100,8 +113,8 @@ int main(void) {
                     ADC_MUX_Init(); // reset mux disconnecting all channels
                     
                     // Get load value                     
-                    Vref    = measure_Voltage(REF_CH);
-                    Vsense  = measure_Voltage(SENSE_CH);
+                    Vref    = measure_Voltage(REF_CH) - Voffset_ref;
+                    Vsense  = measure_Voltage(SENSE_CH) - Voffset_sense;
                     R_sense = (Vsense/(float) (Vref))*REFERENCE_RESISTOR;                        
    
                     integer_part = (uint32_t)(R_sense);

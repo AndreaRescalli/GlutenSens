@@ -281,7 +281,7 @@ class MainWindow(QMainWindow):
             logger.info("PSoC resistance measurement started")
             self.stop_stream_btn.setChecked(False)
             self.graph_tab.clear_plot_btn.setDisabled(True)
-            #self.start = time.time()
+            self.start = time.time()
 
 
     @QtCore.pyqtSlot(bool)
@@ -302,9 +302,9 @@ class MainWindow(QMainWindow):
             if self.res_stream_btn.isChecked():
                 csv_exporter.export_psoc_res_data()
 
-            #self.stop = time.time()
-            #t = self.stop-self.start
-            #logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
+            self.stop = time.time()
+            t = self.stop-self.start
+            logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
 
             # Reset the dictionaries
             csv_exporter.PSoC_res_dict.update({
