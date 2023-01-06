@@ -103,7 +103,7 @@ int main(void) {
             ADC_MUX_FastSelect(SENSE_CH);
             Voffset_sense = measure_Voffset();
             
-            Cmd_SendResetBuffer();
+            //Cmd_SendResetBuffer();
             
             
             while(state == SENSING) {

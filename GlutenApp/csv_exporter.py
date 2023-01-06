@@ -51,6 +51,7 @@ def export_psoc_res_data():
 
         if not os.path.exists("Data"):
             os.mkdir("Data")
+            logger.success("Data directory created.")
             
         file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")+'_'+id
         path = os.path.join('Data',file_name+'.csv')

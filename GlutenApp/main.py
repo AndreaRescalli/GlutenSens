@@ -314,7 +314,6 @@ class MainWindow(QMainWindow):
             self.res_stream_btn.setChecked(False)
             self.res_stream_btn.setDisabled(False)
             self.graph_tab.clear_plot_btn.setDisabled(False)
-
             
 
     def send_input(self):
