@@ -30,14 +30,11 @@ import tab_graph as grp
 import displays
 import csv_exporter
 
-"""Main file in charge of the creation of the application and of handling all the events that happen inside the application."""
-
 
 
 #################
 # LOGGER CONFIG #
 #################
-#: Configuring the logger
 logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}]) # avoids printing all but warnings and higher on terminal
 file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
 logger.add(
@@ -56,13 +53,10 @@ logger.add(
 # MAIN WINDOW #
 ###############
 class MainWindow(QMainWindow):
-    """
-    Subclass QMainWindow to customize application's main window.
-    """
 
     def __init__(self):
-        """
-        Start the MainWindow.
+        """!
+        @brief Init main window.
         """
         #: Define workers
         self.bar_worker = wrk.BarWorker()
@@ -288,7 +282,7 @@ class MainWindow(QMainWindow):
             logger.info("PSoC resistance measurement started")
             self.stop_stream_btn.setChecked(False)
             self.graph_tab.clear_plot_btn.setDisabled(True)
-            self.start = time.time()
+            #self.start = time.time()
 
 
     @QtCore.pyqtSlot(bool)
@@ -309,9 +303,9 @@ class MainWindow(QMainWindow):
             if self.res_stream_btn.isChecked():
                 csv_exporter.export_psoc_res_data()
 
-            self.stop = time.time()
-            t = self.stop-self.start
-            logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
+            #self.stop = time.time()
+            #t = self.stop-self.start
+            #logger.info("time: {}, samples: {}".format(t, len(csv_exporter.PSoC_res_dict['Resistance'])))
 
             # Reset the dictionaries
             csv_exporter.PSoC_res_dict.update({
@@ -427,16 +421,6 @@ class MainWindow(QMainWindow):
             self.graph_tab.update_plot(data[0], self.graph_tab.x_psoc_r, self.graph_tab.y_psoc_r, self.graph_tab.psoc_rLoad_line)
             csv_exporter.PSoC_res_dict['Resistance'].append(data[0])
 
-
-    def update_plot_data(self):
-        if len(self.buffer)>0:
-            if self.dataUpdate:
-                self.graph_tab.psoc_rLoad_line.setData(self.graph_tab.x_psoc_r,self.graph_tab.y_psoc_r)
-                logger.info("num samples: {}".format(len(self.buffer)))
-                self.buffer = []
-                self.dataUpdated = False
-        else:
-            pass
 
 
     def check_serialport_status(self, port_name, status):
