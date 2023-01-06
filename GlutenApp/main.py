@@ -30,11 +30,14 @@ import tab_graph as grp
 import displays
 import csv_exporter
 
+"""Main file in charge of the creation of the application and of handling all the events that happen inside the application."""
+
 
 
 #################
 # LOGGER CONFIG #
 #################
+#: Configuring the logger
 logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}]) # avoids printing all but warnings and higher on terminal
 file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
 logger.add(
@@ -53,11 +56,15 @@ logger.add(
 # MAIN WINDOW #
 ###############
 class MainWindow(QMainWindow):
+    """
+    Subclass QMainWindow to customize application's main window.
+    """
+
     def __init__(self):
-        """!
-        @brief Init MainWindow.
         """
-        # define workers
+        Start the MainWindow.
+        """
+        #: Define workers
         self.bar_worker = wrk.BarWorker()
         self.scan_worker = wrk.ScanWorker()
         self.read_worker = wrk.ReadWorker(None)
