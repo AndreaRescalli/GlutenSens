@@ -35,6 +35,9 @@ import csv_exporter
 #################
 # LOGGER CONFIG #
 #################
+"""
+Configuring the logger to print messages on terminal(s)
+"""
 logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}]) # avoids printing all but warnings and higher on terminal
 file_name = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
 logger.add(
@@ -54,27 +57,29 @@ logger.add(
 ###############
 class MainWindow(QMainWindow):
     """
-    Docstring for main window.
+    Main window of GlutenApp. All the widgets and operations are managed inside here.
     """
 
     def __init__(self):
         """
-        Init main window.
+        This method inits main window.
         """
-        #: Define workers
+        # Parallel thread for progress bar
         self.bar_worker = wrk.BarWorker()
+        # Parallel thread for serial port scan
         self.scan_worker = wrk.ScanWorker()
+        # Parallel thread for serial port reading
         self.read_worker = wrk.ReadWorker(None)
 
         super(MainWindow, self).__init__()
 
-        # title and geometry
+        # Title and geometry
         self.setWindowTitle("GlutenSense")
         width = 1000
         height = 800
         self.setMinimumSize(width, height)
         
-        # create thread handler
+        # Thread handler
         self.threadpool = QtCore.QThreadPool()
 
         self.serialscan()
@@ -86,11 +91,11 @@ class MainWindow(QMainWindow):
     # GRAPHIC INTERFACE #
     #####################
     def initUI(self):
-        """!
-        @brief Set up the graphical interface structure.
+        """
+        This method sets up the graphical interface structure.
         """
 
-        # status bar
+        # Status bar
         self.status_bar = QStatusBar(self)
         self.setStatusBar(self.status_bar)
         self.status_label = QLabel("Searching for target device...")
@@ -98,18 +103,18 @@ class MainWindow(QMainWindow):
         self.status_bar.addWidget(self.status_label,1)
         self.status_bar.addWidget(self.progress_bar,1)
 
-        # menu
+        # Menu bar
         menu = self.menuBar()
         self.file_menu = menu.addMenu("&File")
         self.option_menu = menu.addMenu("&Options")
 
-        # toolbar
+        # Toolbar
             # File toolbar
         self.file_toolbar = QToolBar("File toolbar")
-                # cannot be moved
+                # Cannot be moved
         self.file_toolbar.setMovable(False)
         self.file_toolbar.setFloatable(False)
-                # cannot be hidden
+                # Cannot be hidden
         self.file_toolbar.toggleViewAction().setEnabled(False)
         self.file_toolbar.setIconSize(QtCore.QSize(16, 16))
         self.addToolBar(self.file_toolbar)
@@ -134,10 +139,10 @@ class MainWindow(QMainWindow):
         self.file_menu.addAction(self.csv_export_icon)
             # Option toolbar
         self.opt_toolbar = QToolBar("Option toolbar")
-                # cannot be moved
+                # Cannot be moved
         self.opt_toolbar.setMovable(False)
         self.opt_toolbar.setFloatable(False)
-                # cannot be hidden
+                # Cannot be hidden
         self.opt_toolbar.toggleViewAction().setEnabled(False)
         self.opt_toolbar.setIconSize(QtCore.QSize(16, 16))
         self.addToolBar(self.opt_toolbar)
@@ -146,22 +151,22 @@ class MainWindow(QMainWindow):
         self.graph_tab = grp.MyTabWidget()
         self.graph_tab.setDisabled(True)
 
-        # serial interface
-            # button to start R measurement with PSoC readout circuit
+        # Serial interface
+            # Button to start R measurement with PSoC readout circuit
         self.res_stream_btn = QPushButton(
             text="Start measure",
             checkable=True,
-            toggled=self.PSoC_res_measure_start
+            toggled=self.psoc_res_measure_start
         )
         self.res_stream_btn.setDisabled(True)
-            # button to stop any data streaming
+            # Button to stop any data streaming
         self.stop_stream_btn = QPushButton(
             text="STOP",
             checkable=True,
             toggled=self.stop_data_stream
         )
         self.stop_stream_btn.setDisabled(True)
-            # user line
+            # User input line
         self.input_txt = QLineEdit()
         self.input_txt.setDisabled(True)
         self.send_btn = QPushButton(
@@ -175,7 +180,7 @@ class MainWindow(QMainWindow):
         self.send_btn.setDisabled(True)
         self.clear_btn.setDisabled(True)
 
-        # logger display
+        # Logger display
         self.logger_interface = displays.LoggerDisplay()
         self.logger_interface.signals.append_signal.connect(self.update_log_window)
         self.logger_txt = displays.LoggerDisplay().txt_window
@@ -209,19 +214,19 @@ class MainWindow(QMainWindow):
     # SERIAL INTERFACE #
     ####################
     def serialscan(self):
-        """!
-        @brief Automatic connection with target device.
+        """
+        This method performs an automatic connection with target device.
 
-        This function scans all the available ports with a Cypress device
+        Scans all the available ports with a Cypress device
         connected to them, then searches across them for the target device.
         If found, the GUI connects to it, otherwise an error will be generated.
         """
-        # create the combo box to host port list
         self.port_text = ""
+        # Combo box to hold ports list
         self.com_list_widget = QComboBox()
         self.com_list_widget.currentTextChanged.connect(self.port_changed)
         
-        # create the connection button
+        # Connect-to-port button
         self.conn_btn = QPushButton(
             text=("Connect to port {}".format(self.port_text)), 
             checkable=True,
@@ -231,38 +236,41 @@ class MainWindow(QMainWindow):
             self.com_list_widget.setDisabled(True)
             self.conn_btn.setDisabled(True)
 
-        # setup scan worker (already defined)
+        # Setup scan worker (already defined)
         self.scan_worker.signals.error.connect(self.scanworker_error)
         self.scan_worker.signals.device.connect(self.update_port_list)
-        # execute the worker
+        # Execute the worker
         self.threadpool.start(self.scan_worker)
 
-        # setup progress bar worker (already defined)
+        # Setup progress bar worker (already defined)
         self.bar_worker.signals.progress.connect(self.update_progress)
         self.bar_worker.signals.finished.connect(self.check_progress)
-        # execute the worker
+        # Execute the worker
         self.threadpool.start(self.bar_worker)
 
 
     @QtCore.pyqtSlot(bool)
     def on_toggled(self, checked):
-        """!
-        @brief Allow connection and disconnection from selected serial port.
+        """
+        This method enables connection and disconnection from selected serial port.
+
+        :param checked: State of the ``conn_btn``.
+        :type checked: bool
         """
         if checked:
-            # setup reading worker
+            # Setup reading worker
             self.read_worker = wrk.ReadWorker(self.port_text) # needs to be re defined
             self.read_worker.is_streaming = True
             self.read_worker.signals.data.connect(self.handle_data)
             self.read_worker.signals.status.connect(self.check_serialport_status)
-            # execute the worker
+            # Execute the worker
             self.threadpool.start(self.read_worker)
         else:
-            # stop streaming
+            # Stop streaming
             self.read_worker.is_streaming = False
-            # kill thread
+            # Kill thread
             self.read_worker.is_killed = True
-            # disable all the widgets
+            # Disable all the widgets
             self.com_list_widget.setDisabled(False) # enable the possibility to change port
             self.res_stream_btn.setDisabled(True)
             self.input_txt.setDisabled(True)
@@ -276,9 +284,12 @@ class MainWindow(QMainWindow):
 
 
     @QtCore.pyqtSlot(bool)
-    def PSoC_res_measure_start(self, checked):
-        """!
-        @brief Start resistance measurement using PSoC readout circuit.
+    def psoc_res_measure_start(self, checked):
+        """
+        This method starts resistance measurement using PSoC readout circuit.
+
+        :param checked: State of the ``res_stream_btn``.
+        :type checked: bool
         """
         if checked:
             self.read_worker.send(wrk.PSOC_RES_CMD)
@@ -290,15 +301,15 @@ class MainWindow(QMainWindow):
 
     @QtCore.pyqtSlot(bool)
     def stop_data_stream(self, checked):
-        """!
-        @brief Stop measurement and export data to csv file.
+        """
+        This method stops measurement and, if enabled, exports data to csv file.
 
-        N.B: This function does NOT set is_streaming to false, neither kill the 
-        read_woker thread, because the thread is started only upon connection with
-        the port: killing the thread (or equivalently setting is_streaming to False,
-        operation that allows the read_worker's run method to terminate) will as a 
-        result negate the possibility to read the port (user would have to disconnect
-        and reconnect).
+        .. note:: 
+            This function does **not** set ``is_streaming`` to ``False``, neither kills the 
+            ``read_woker`` thread. This operation is performed only by :py:meth:`on_toggle`.
+
+        :param checked: State of the ``stop_stream_btn``.
+        :type checked: bool
         """
         if checked:
             self.read_worker.send(wrk.STOP_STREAM_CMD)
@@ -321,8 +332,8 @@ class MainWindow(QMainWindow):
             
 
     def send_input(self):
-        """!
-        @brief Send user typed text.
+        """
+        This method sends user typed text to the connected device.
         """
         self.read_worker.send(self.input_txt.text())
 
@@ -332,8 +343,12 @@ class MainWindow(QMainWindow):
     # SCAN WORKER SIGNALS #
     #######################
     def scanworker_error(self, text):
-        """!
-        @brief No target device found on any port. Adjust status bar label and COM port list.
+        """
+        This method handles errors generated when no target device is found on any port. 
+        Adjusts status bar label and COM port list.
+
+        :param text: Error string to be printed on console.
+        :type text: str
         """
         self.status_label.setText("Searching for target device...")
         self.com_list_widget.clear()
@@ -344,8 +359,11 @@ class MainWindow(QMainWindow):
 
             
     def update_port_list(self, port):
-        """!
-        @brief Update serial port list widget based on in-use ones.
+        """
+        This method updates serial ports list widget based on active ones.
+
+        :param port: Port name to which a Cypress device is connected.
+        :type port: str
         """
         if self.com_list_widget.findText(port) == -1: # avoids duplicates
             self.com_list_widget.addItems([port])
@@ -357,29 +375,38 @@ class MainWindow(QMainWindow):
     # BAR WORKER SIGNALS #
     ######################
     def update_progress(self, progress):
-        """!
-        @brief Update progress bar.
+        """
+        This method updates the progress bar during the initial search-for-target-devide phase.
+
+        :param progress: Progress quantification from 0 to 100% to be visualized on screen.
+        :type progress: int
+
+        .. note:: 
+            The percentage is time based, not event-related. The only event that
+            has an impact on the percentage displayed is the connection with the
+            target device, upon which 100% will be displayed.
         """
         self.progress_bar.setValue(progress)
 
 
     def check_progress(self):
-        """!
-        @brief Manage progress bar.
+        """
+        This method operates on the progress bar depending on the status of the 
+        search-for-target-devide and connection phases.
         """
         if wrk.CONNECTION_STATUS != wrk.DEVICE_CONN:
-            # setup progress bar worker
+            # Setup progress bar worker
             self.bar_worker = wrk.BarWorker() # needs to be re defined
             self.bar_worker.signals.progress.connect(self.update_progress)
             self.bar_worker.signals.finished.connect(self.check_progress)
-            # execute the worker
+            # Execute the worker
             self.threadpool.start(self.bar_worker)
         else:
-            # remove widgets from status bar
+            # Remove widgets from status bar
             time.sleep(0.5)
             self.status_bar.removeWidget(self.progress_bar)
             self.status_bar.removeWidget(self.status_label)
-            # enable the interface and set status tips (not done before to avoid hiding the progress bar)
+            # Enable the interface and set status tips (not done before to avoid hiding the progress bar)
             self.conn_btn.setDisabled(False)
             self.conn_btn.setChecked(True)
             self.id_txt.setStatusTip("Insert identifier for .csv file. Max 5 char allowed")
@@ -401,11 +428,14 @@ class MainWindow(QMainWindow):
     # READ WORKER SIGNALS #
     #######################
     def handle_data(self, packet_type, data):
-        """!
-        @brief Update output_window, respective dictionaries and plots.
+        """
+        This method updates the output window and the plot; it also updates the dictionary in which the 
+        resistance values, measured by the instrument and transmitted to the host machine, are stored.
         
-        Update the output_window widget to display what has been read on serial port.
-        It also updates the appropriate plots based on type of data read.
+        :param packet_type: Identifier of the type of data that have been received.
+        :type packet_type: str
+        :param data: The actual data being received.
+        :type data: list
         """
         if packet_type != "Reset info":
             # Reset info is handled differently
@@ -414,26 +444,27 @@ class MainWindow(QMainWindow):
                 self.graph_tab.output_window.moveCursor(QtGui.QTextCursor.End)
 
         if packet_type == "Reset info":
-            # reset stream buttons to relfect device status (not streaming)
+            # Reset stream buttons to relfect device status (not streaming)
             self.res_stream_btn.setChecked(False)
             self.res_stream_btn.setDisabled(False)
             self.stop_stream_btn.setChecked(False)
-            # clear plots
+            # Clear plots
             self.graph_tab.clear_plot(1, self.graph_tab.psoc_r_graph) # 1 is just random to account for state parameter
         elif packet_type == "PSoC res measurement":
+            # Update plot and dict
             self.graph_tab.update_plot(data[0], self.graph_tab.x_psoc_r, self.graph_tab.y_psoc_r, self.graph_tab.psoc_rLoad_line)
             csv_exporter.PSoC_res_dict['Resistance'].append(data[0])
 
 
 
     def check_serialport_status(self, port_name, status):
-        """!
-        @brief Handle the status of the serial port connection.
+        """
+        This method handles the status of the connection to serial port phase.
 
-        Available status:
-            - 0  --> Error during opening of serial port
-            - 1  --> Serial port opened correctly
-            - 2  --> Error during reading of serial port
+        :param port_name: Port name to which a connection is being estabilished.
+        :type port_name: str
+        :param status: Paramenter representing the status of the connection (0 - error during opening, 1 - success, 2 - error during reading).
+        :type status: int
         """
         if status == 0:
             self.conn_btn.setChecked(False)
@@ -445,10 +476,10 @@ class MainWindow(QMainWindow):
             dlg.setIcon(QMessageBox.Warning)
             button = dlg.exec_()
         elif status == 1:
-            # clear user line and serial interface tab
+            # Clear user line and output window tab
             self.graph_tab.output_window.clear()
             self.input_txt.clear()
-            # enable all the widgets on the interface
+            # Enable all the widgets on the interface
             self.com_list_widget.setDisabled(True) # disable the possibility to change COM port when already connected
             self.res_stream_btn.setDisabled(False)
             self.input_txt.setDisabled(False)
@@ -461,7 +492,7 @@ class MainWindow(QMainWindow):
             )
         elif status == 2:
             self.conn_btn.setChecked(False)
-            # this error is due to port disconnection, so the device
+            # This error is generated upon device disconnection from port, so the device
             # has to be reconnected --> will be reset --> it won't stream once reset
             # --> we can set streaming buttons as default to not confuse the user
             self.stop_stream_btn.setChecked(False)
@@ -479,22 +510,23 @@ class MainWindow(QMainWindow):
     #  UTILITIES  #
     ###############
     def port_changed(self):
-        """!
-        @brief Update conn_btn label based on selected port.
+        """
+        This method updates ``conn_btn`` label based on selected port.
         """
         self.port_text = self.com_list_widget.currentText()
         self.conn_btn.setText("Connect to port {}".format(self.port_text))
 
 
-    def ExitHandler(self):
-        """!
-        @brief Kill every possible running thread upon exiting application.
+    def exitHandler(self):
+        """
+        This method kills every possible running thread upon exiting application.
 
-        N.B: Due to the time it takes to scan each single port, if prematurely
-        interupted the scan_worker thread may raise a RuntimeError in the terminal
-        BUT its functions using a serial port are designed to also close it, so
-        after very few seconds (necessary to terminate the operations) the app can 
-        be runned again without any problem.
+        .. note::
+            Due to the time it takes to scan each single port, if prematurely
+            interupted the ``scan_worker`` thread may raise a ``RuntimeError`` in the terminal,
+            but its functions that use a serial port are designed to also close said port, hence
+            after very few seconds (necessary to terminate the operations) the app can 
+            be run again without any problem.
         """
         displays.KILL = True # avoids printing to a not-anymore-existing widget
         self.scan_worker.is_killed = True
@@ -504,8 +536,11 @@ class MainWindow(QMainWindow):
 
 
     def update_log_window(self, text):
-        """!
-        @brief Update the logger display.
+        """
+        This method updates the logger display.
+
+        :param text: Text to be displayed.
+        :type text: str
         """
         self.logger_txt.append(text)
         self.logger_txt.moveCursor(QtGui.QTextCursor.End)
@@ -513,15 +548,18 @@ class MainWindow(QMainWindow):
 
     @QtCore.pyqtSlot(str)
     def change_csv_id(self, id):
-        """!
-        @brief Update the csv identifier with user input.
+        """
+        This method updates the csv identifier according to user input.
+
+        :param id: ID typed by the user inside corresponding box.
+        :type id: str
         """
         csv_exporter.id = id.replace(' ','-') # avoid spaces in the id
 
 
     def doExportcsv(self, checked):
-        """!
-        @brief Enable csv export.
+        """
+        This method enables csv export of received data.
         """
         if checked:
             logger.info("Data export to .csv file enabled")
@@ -538,7 +576,7 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWindow()
-    app.aboutToQuit.connect(w.ExitHandler)
+    app.aboutToQuit.connect(w.exitHandler)
     w.show()
     sys.exit(app.exec_())
 
