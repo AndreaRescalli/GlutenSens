@@ -54,7 +54,7 @@ logger.add(
 ###############
 class MainWindow(QMainWindow):
     """
-        Docstring for main window.
+    Docstring for main window.
     """
 
     def __init__(self):
