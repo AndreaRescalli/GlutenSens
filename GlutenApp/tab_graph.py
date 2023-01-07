@@ -20,9 +20,13 @@ import serial_workers as wrk
 # TAB WIDGET #
 ##############
 class MyTabWidget(QWidget):
+    """
+    This class holds the tabs shown at the center of the application. The first tab hosts an
+    output window on which numeric data will be printed, whereas the second tab hosts the data plot.
+    """
     def __init__(self):
-        """!
-        @brief Init MyTabWidget.
+        """
+        Init a tab widget.
         """
         super(QWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -80,8 +84,23 @@ class MyTabWidget(QWidget):
 
 
     def plot(self, graph, x, y, curve_name, color):
-        """!
-        @brief Draw graph.
+        """
+        This method overwrites the existing ``.plot`` method for a graph to offer flexibility in multiple-curves plots 
+        and multiple plots scenarios.
+
+        :param graph: Plot on which the user wants to draw.
+        :type graph: PlotWidget
+        :param x: Array of data to be shown on x-axis.
+        :type x: double
+        :param y: Array of data to be plotted.
+        :type y: double
+        :param curve_name: Name of the curve to be plotted. Will be shown in the legend.
+        :type curve_name: str
+        :param color: Color of the curve.
+        :type color: str
+
+        :returns: An object representing the plotted curve. It can be manipulated to update the plot without the need 
+            to re-draw it. 
         """
         pen = pg.mkPen(color=color)
         line = graph.plot(x, y, name=curve_name, pen=pen)
@@ -89,8 +108,16 @@ class MyTabWidget(QWidget):
 
   
     def update_plot(self, data, x_array, y_array, plot_line):
-        """!
-        @brief Update graph line with new data received.
+        """
+        This method updates the plot curve with new data received.
+
+        :param data: New data to update the plot with.
+        :type data: double
+        :param x: Array of data to be shown on x-axis.
+        :type x: double
+        :param y: Array of data to be plotted.
+        :type y: double
+        :param plot_line: Plot curve that needs to be updated with the new data.
         """
         # Update y values
         y_array.append(y_array.pop(0))
@@ -101,12 +128,13 @@ class MyTabWidget(QWidget):
 
 
     def clear_plot(self, state, graph):
-        """!
-        @brief Clear graph to account for sample rate changes.
+        """
+        This method clears the plot.
 
-        To always visualize seconds along the x axis while accounting for possible
-        changes in the sample rate induced by the user, there is the need to re-
-        compute the x axis whenever this happens, and update the corresponding plot.
+        :param state: Dummy variable. It holds the state of the ``clear_plot_btn`` when clicked but it is not used.
+        :type state: int
+        :param graph: Plot that needs to be cleared.
+        :type graph: PlotWidget
         """
         if graph == self.psoc_r_graph:
             # Re-define axes
@@ -117,13 +145,19 @@ class MyTabWidget(QWidget):
 
 
     def define_axes(self, sample_rate):
-        """!
-        @brief Define the x axis (and init y to 0) according to sample rate.
-
-        The dependency on the sample rate is needed to adjust from sample per
-        seconds to seconds (which is the units displayed on the x axis)
         """
-        n_points = self.n_seconds * sample_rate # Number of points to plot
+        This method defines the x axis (and init y axis to 0) according to a given sample rate.
+        The dependency on the sample rate is needed to adjust from sample per
+        seconds to seconds (which is the units displayed on the x axis).
+
+        :param sample_rate: The sample rate of the acquired data.
+        :type sample_rate: int
+
+        :returns: The two axes in the form of two arrays.
+        :rtype: tuple
+        """
+        # Number of points to plot
+        n_points = self.n_seconds * sample_rate 
 
         time_between_points = (self.n_seconds)/float(n_points)
         x_axis = [x for x in range(-n_points, 0)]

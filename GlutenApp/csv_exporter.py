@@ -13,39 +13,37 @@ import serial_workers as wrk
 ############
 #  MACROS  #
 ############
-"""!
-@brief If the user want to export or not.
-"""
 EXPORT = False
+"""
+If the user want to export or not.
+"""
 
 
 
 ##################
 #  DICTIONARIES  #
 ##################
-"""!
-@brief Dict storing PSoC resistance data.
-"""
 PSoC_res_dict = {
     'Resistance': []
 }
-
+"""
+Dictionary storing measured resistance data.
+"""
 
 
 # Global
-"""!
-@brief Global variable containing .csv identifier.
-"""
 id = ''
-
+"""
+Global variable containing .csv identifier chosen by the user.
+"""
 
 
 ##################
 #  EXPORT FUNCS  #
 ##################
 def export_psoc_res_data():
-    """!
-    @brief Create csv file with proper info and export PSoC resistance dict.
+    """
+    This function creates a ``.csv`` file with information on sampling frequency and resistance data.
     """
     if EXPORT:
 

@@ -19,35 +19,35 @@ import serial.tools.list_ports
 ##############
 #  COMMANDS  #
 ##############
-"""!
-@brief Command to find target device.
-"""
 CONN_REQUEST_CMD = 'c'
-
-"""!
-@brief Command to initiate PSoC R measurement.
 """
+Command to find target device.
+"""
+
 PSOC_RES_CMD = 'm'
-
-"""!
-@brief Command to stop data streaming.
 """
+Command to initiate PSoC resistance measurement.
+"""
+
 STOP_STREAM_CMD = 's'
-
-"""!
-@brief Command to retrieve info.
 """
+Command to stop data streaming.
+"""
+
 RESET_CMD = 'r'
+"""
+Command to retrieve information such as sampling frequency.
+"""
 
 
 
 ##############
 #  SETTINGS  #
 ##############
-"""!
-@brief Baudrate of serial port.
-"""
 BAUDRATE = 115200
+"""
+Baudrate of serial port.
+"""
 
 
 
@@ -55,67 +55,67 @@ BAUDRATE = 115200
 #   MACROS   #
 ##############
     # --------------- CONNECTION
-"""!
-@brief Target device not connected.
+DEVICE_NOT_CONN = False    
 """
-DEVICE_NOT_CONN = False
+Target device not connected.
+"""
 
-"""!
-@brief Target device connected.
-"""
 DEVICE_CONN = True
-
-"""!
-@brief Variable that holds the status of the connection between GUI and target device.
 """
+Target device connected.
+"""
+
 CONNECTION_STATUS = DEVICE_NOT_CONN
-
-"""!
-@brief Attempting to connect to a port.
 """
+Variable that holds the status of the connection between GUI and target device.
+"""
+
 CONNECTING = 0
-
-"""!
-@brief Target device NOT found on a port.
 """
+Attempting to connect to a port.
+"""
+
 DEV_NOT_FOUND = 1
-
-"""!
-@brief Target device found on a port.
 """
+Target device NOT found on a port.
+"""
+
 DEV_FOUND = 2
-
-"""!
-@brief Connection with target device estabilished.
 """
+Target device found on a port.
+"""
+
 DEV_CONN = 3
+"""
+Connection with target device estabilished.
+"""
 
     # --------------- DATA STREAM
-"""!
-@brief Header byte for incoming PSoC resistance measurements data.
+HEADER_PSOC_R_MEAS = 0x0A    
 """
-HEADER_PSOC_R_MEAS = 0x0A
+Header byte for incoming PSoC resistance measurements data.
+"""
 
-"""!
-@brief Header byte for reset info.
-"""
 HEADER_RESET = 0x00
-
-
-"""!
-@brief Tail byte for incoming capacitance measurements data.
 """
+Header byte for reset info.
+"""
+
 TAIL_MEAS_PACKETS = 0xFF
-
-"""!
-@brief Tail byte for reset info.
 """
+Tail byte for incoming measurements data.
+"""
+
 TAIL_RESET = 0x0F
-
-"""!
-@brief PSoC resistance measurement display rate in Hz.
 """
-PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection and at start of measurement to be sure
+Tail byte for reset info.
+"""
+
+PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection to be sure
+"""
+PSoC resistance measurement display rate in Hz. 
+Hardcoded but also retrieved upon connection to be sure.
+"""
 
 
 
@@ -123,16 +123,12 @@ PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection and at 
 # SCAN_SIGNALS #
 ################
 class ScanWorkerSignals(QObject):
-    """!
-    @brief Class that defines the signals available to a scanworker.
-
-    Available signals (with respective inputs) are:
-        - error:
-            str --> error string to be printed on console
-        - device:
-            str --> port name to which a Cypress device is connected
     """
+    Class that defines the signals available to a :py:meth:`ScanWorker` object.
+    """
+    #: Error *(str)* to be printed on console.
     error = pyqtSignal(str)
+    #: Port name *(str)* to which a Cypress device is connected.
     device = pyqtSignal(str)
 
 
@@ -141,16 +137,16 @@ class ScanWorkerSignals(QObject):
 # SCAN_WORKER #
 ###############
 class ScanWorker(QRunnable):
-    """!
-    @brief Main class for serial scan: searches for target device.
+    """
+    Main class for serial scan: searches for target device.
     """
     def __init__(self):
-        """!
-        @brief Init worker.
+        """
+        Init a scan worker.
         """
         self.is_killed = False
         super().__init__()
-        # init port, params and signals
+        # Init port, params and signals
         self.ser = serial.Serial()
         self.port = None
         self.baudrate = None
@@ -159,8 +155,8 @@ class ScanWorker(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        """!
-        @brief Scan the serial ports to search for target device.
+        """
+        This method scans the active serial ports to search for target device.
         """
         logger.trace("Serial ports scan thread initiated.")
         global CONNECTION_STATUS
@@ -172,7 +168,7 @@ class ScanWorker(QRunnable):
             psoc_ports = [
                 p.name
                 for p in serial.tools.list_ports.comports()
-                # the following option will speed-up the research but if the PC does not
+                # The following option will speed-up the research but if the PC does not
                 # recognize the device as 'Cypress' due to driver's issues, it will not
                 # be able to find the device.
                 #if 'Cypress' in p.manufacturer 
@@ -206,8 +202,13 @@ class ScanWorker(QRunnable):
 
 
     def check_device(self, port):
-        """!
-        @brief Check whether the current port has target device connected to it.
+        """
+        This method checks whether the current port has target device connected to it.
+
+        :param port: Name of the port to be checked.
+        :type port: str
+        :returns: ``True`` or ``False`` based on whether the target device has been found on that port.
+        :rtype: bool
         """
         logger.debug("Checking port {}.".format(port))
         try:
@@ -244,15 +245,12 @@ class ScanWorker(QRunnable):
 # BAR_SIGNALS #
 ###############
 class BarWorkerSignals(QObject):
-    """!
-    @brief Class that defines the signals available to a barworker.
-
-    Available signals (with respective inputs) are:
-        - progress:
-            int --> progress complete, from 0-100
-        - finished
     """
+    Class that defines the signals available to a :py:meth:`BarWorker` object.
+    """
+    #: Progress *(int)* percentage to be displayed on application's status bar.
     progress = pyqtSignal(int)
+    #: Signal emitted when progress bar is at 100%.
     finished = pyqtSignal()
 
 
@@ -261,12 +259,12 @@ class BarWorkerSignals(QObject):
 # BAR_WORKER #
 ##############
 class BarWorker(QRunnable):
-    """!
-    @brief Main class for progress bar update.
+    """
+    Main class for progress bar update.
     """
     def __init__(self):
-        """!
-        @brief Init worker.
+        """
+        Init a bar worker.
         """
         self.is_killed = False
         super().__init__()
@@ -275,12 +273,13 @@ class BarWorker(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        """!
-        @brief Compute the 0 to 100 %.
-        
-        The percentage is time based, not event related. The only event that
-        has an impact on the percentage displayed is the connection with the
-        target device, upon which 100% will be displayed.
+        """
+        This method computes the percentage progress with which the progress bar will be updated.
+
+        .. note:: 
+            The percentage is time based, not event-related. The only event that
+            has an impact on the percentage displayed is the connection with the
+            target device, upon which 100% will be displayed.
         """
         logger.trace("Progress bar thread initiated.")
         global CONNECTION_STATUS
@@ -305,21 +304,14 @@ class BarWorker(QRunnable):
 # READ_SIGNALS #
 ################
 class ReadWorkerSignals(QObject):
-    """!
-    @brief Class that defines the signals available to a readworker.
-
-    Available signals (with respective inputs) are:
-        - data:
-            list  --> data to be printed on console and plotted
-            str   --> packet type
-        - error:
-            str --> error string to be printed on console
-        - status:
-            str --> port name
-            int --> macro representing the state (0 - error during opening, 1 - success, 2 - reading error)
     """
+    Class that defines the signals available to a :py:meth:`ReadWorker` object.
+    """
+    #: Contains the type of data *(str)* and the actual data *(list)* received.
     data = pyqtSignal(str, list)
+    #: Error *(str)* to be printed on console. 
     error = pyqtSignal(str)
+    #: Contains the name of the COM port being used *(str)* and the status *(int)* of its connection (0 - error during opening, 1 - success, 2 - reading error).
     status = pyqtSignal(str, int)
 
 
@@ -328,12 +320,12 @@ class ReadWorkerSignals(QObject):
 # READ_WORKER #
 ###############
 class ReadWorker(QRunnable):
-    """!
-    @brief Main class for serial reading tasks.
+    """
+    Main class for serial reading tasks.
     """
     def __init__(self, serial_port_name):
-        """!
-        @brief Init worker.
+        """
+        Init a read worker.
         """
         self.is_streaming = False
         self.is_killed = False
@@ -347,8 +339,8 @@ class ReadWorker(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        """!
-        @brief Estabilish connection with desired serial port and collect data.
+        """
+        This method estabilishes a connection with desired serial port and collects incoming data.
         """
         logger.trace("Reading thread initiated.")
         global PSOC_RES_SAMPLE_RATE
@@ -419,8 +411,11 @@ class ReadWorker(QRunnable):
 
 
     def send(self, char):
-        """!
-        @brief Basic function to send a single char on serial port.
+        """
+        This method sends a single character on serial port.
+
+        :param char: Character to be sent.
+        :type char: char
         """
         try:
             self.port.write(char.encode('utf-8'))
@@ -430,19 +425,28 @@ class ReadWorker(QRunnable):
 
 
     def get_data(self, data_raw):
-        """!
-        @brief Retrieve capacitance or resistance value measured from 6 bytes.
+        """
+        This method reconstructs the measured resistance value from the 6 bytes received.
 
-        data_raw has the following structure:
-            The first 4 bytes encodes for the integer value, in pF or Ohm
-            - [0]: (0x???????? >> 24) & 0xFF
-            - [1]: (0x???????? >> 16) & 0xFF
-            - [2]: (0x???????? >> 8)  & 0xFF
-            - [3]: (0x????????)       & 0xFF
-            The last two bytes encodes for the decimal part as an int16.
+        :param data_raw: Array of 6 bytes containing resistance data to be reconstructed.
+        :type data_raw: int
+
+        :returns: Reconstructed value of resistance.
+        :rtype: float
+
+        .. note::
+            The first 4 bytes of data_raw encodes the integer value, in Ohm:
+
+            0. (0x???????? >> 24) & 0xFF
+            1. (0x???????? >> 16) & 0xFF
+            2. (0x???????? >> 8)  & 0xFF
+            3. (0x????????)       & 0xFF
+
+            The last 2 bytes encodes the decimal part as an integer.
             To get the decimal value they need to be divided by 1000.
-            - [4]: (0x???? >> 8)      & 0xFF
-            - [5]: (0x????)           & 0xFF
+
+            4. (0x???? >> 8)      & 0xFF
+            5. (0x????)           & 0xFF
 
         """
         data_int = data_raw[0] << 24 | data_raw[1] << 16 | data_raw[2] << 8 | data_raw[3]

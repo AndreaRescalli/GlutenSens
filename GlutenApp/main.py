@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         """
-        This method inits main window.
+        Init a main window.
         """
         # Parallel thread for progress bar
         self.bar_worker = wrk.BarWorker()
@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
         """
         This method performs an automatic connection with target device.
 
-        Scans all the available ports with a Cypress device
+        Scans all the available ports with a device
         connected to them, then searches across them for the target device.
         If found, the GUI connects to it, otherwise an error will be generated.
         """
@@ -362,7 +362,7 @@ class MainWindow(QMainWindow):
         """
         This method updates serial ports list widget based on active ones.
 
-        :param port: Port name to which a Cypress device is connected.
+        :param port: Port name to which a device is connected.
         :type port: str
         """
         if self.com_list_widget.findText(port) == -1: # avoids duplicates
