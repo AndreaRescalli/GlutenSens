@@ -20,6 +20,8 @@ portable instrument for easy gluten-free check of food samples developed during 
 
    modules
 
+.. include:: modules.rst
+
 
 Indices and tables
 ==================
