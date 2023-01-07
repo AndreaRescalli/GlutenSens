@@ -55,8 +55,8 @@ logger.add(
 class MainWindow(QMainWindow):
 
     def __init__(self):
-        """!
-        @brief Init main window.
+        """
+        Init main window.
         """
         #: Define workers
         self.bar_worker = wrk.BarWorker()
