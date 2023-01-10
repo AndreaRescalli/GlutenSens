@@ -111,7 +111,7 @@ TAIL_RESET = 0x0F
 Tail byte for reset info.
 """
 
-PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection to be sure
+PSOC_RES_SAMPLE_RATE = 10 # hardcoded but also retrieved upon connection to be sure
 """
 PSoC resistance measurement display rate in Hz. 
 Hardcoded but also retrieved upon connection to be sure.
