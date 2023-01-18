@@ -15,6 +15,9 @@
 
 #include "Commands.h"
 
+#define TEST_HEADER 0x11
+#define TEST_TAIL   0x0f
+
 
 
 
@@ -69,6 +72,28 @@ void Cmd_SendResetBuffer(void) {
     reset_buffer[RESET_SIZE-1]       = TAIL_RESET;
     
     UART_PutArray(reset_buffer, RESET_SIZE);
+}
+
+
+
+/**
+*   \brief Send data stored in union object.
+*
+*   This function sends the data buffer 
+*   to the GUI.
+*/    
+void Cmd_SendUnion(void) {
+    union_data.f = -5648.365;
+    uint8_t u_buffer[6] = {0};
+    
+    u_buffer[0]         = 0x11;
+    u_buffer[1]         = union_data.byte[0];
+    u_buffer[2]         = union_data.byte[1];
+    u_buffer[3]         = union_data.byte[2];
+    u_buffer[4]         = union_data.byte[3];
+    u_buffer[6-1]       = 0x0F;
+    
+    UART_PutArray(u_buffer, 6);     
 }
 
 

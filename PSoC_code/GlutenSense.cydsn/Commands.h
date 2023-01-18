@@ -65,6 +65,16 @@
     
     
     /**
+    *   \brief Send data stored in union object.
+    *
+    *   This function sends the data buffer 
+    *   to the GUI.
+    */    
+    void Cmd_SendUnion(void);
+    
+    
+       
+    /**
     *   \brief Print commands help.
     *
     *   This function prints all the commands available to the user 
@@ -93,9 +103,24 @@
         {'m', &Cmd_StartMeasure, "Enter m to start measurement.\r\n"},
         {'s', &Cmd_StopMeasure, "Enter s to stop measurement.\r\n"},
         {'r', &Cmd_SendResetBuffer, "Enter r to send reset info.\r\n"},
+        {'u', &Cmd_SendUnion, "Enter u to send test union data buffer.\r\n"},
         {'h', &Cmd_PrintHelp, "Enter h to list commands.\r\n"},
         {' ',0,""} // End of table indicator
     };  
+    
+    
+    /**
+    *   \brief Union object to store data.
+    *
+    *   Definition of data union structure to simply 
+    *   transmission of data.
+    */
+    union {
+        float f;
+        struct {
+            uint8_t byte[4];
+        };
+    } union_data;
           
 #endif
 
