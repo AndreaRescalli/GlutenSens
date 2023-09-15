@@ -1,6 +1,7 @@
 ### PSoCCreator ###
 # Project Settings
 *.cywrk.*
+*.cywrk-*.*
 *.cyprj.*
 *.cydsn/*.cyprj.*
 
