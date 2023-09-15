@@ -294,6 +294,7 @@ class MainWindow(QMainWindow):
         if checked:
             self.read_worker.send(wrk.PSOC_RES_CMD)
             logger.info("PSoC resistance measurement started")
+            self.res_stream_btn.setDisabled(True)
             self.stop_stream_btn.setChecked(False)
             self.graph_tab.clear_plot_btn.setDisabled(True)
             #self.start = time.time()

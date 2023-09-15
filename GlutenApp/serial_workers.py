@@ -2,6 +2,8 @@ import time
 
 import struct
 
+import math
+
 from loguru import logger
 
 from PyQt5.QtCore import (
@@ -111,7 +113,7 @@ TAIL_RESET = 0x0F
 Tail byte for reset info.
 """
 
-PSOC_RES_SAMPLE_RATE = 80 # hardcoded but also retrieved upon connection to be sure
+PSOC_RES_SAMPLE_RATE = 10 # hardcoded but also retrieved upon connection to be sure
 """
 PSoC resistance measurement display rate in Hz. 
 Hardcoded but also retrieved upon connection to be sure.
@@ -363,13 +365,17 @@ class ReadWorker(QRunnable):
                         # Header byte
                         header = struct.unpack('B', header)[0]
                         if (header == HEADER_PSOC_R_MEAS  or
-                            header == HEADER_RESET):
+                            header == HEADER_RESET        or
+                            header == 0x11):
                             self.read_state = 1
                             if (header == HEADER_PSOC_R_MEAS):
                                 self.packet_type = "PSoC res measurement"
                             elif (header == HEADER_RESET):
                                 self.packet_type = "Reset info"
                                 logger.debug("Device reset.")
+                            elif (header == 0x11):
+                                self.packet_type = "Test"
+                                logger.debug("Test.")
                     elif self.read_state == 1:
                         if self.packet_type == "PSoC res measurement":
                             res_raw = self.port.read(6)
@@ -379,6 +385,10 @@ class ReadWorker(QRunnable):
                             info_raw = self.port.read(1)
                             # Data bytes
                             info_raw = struct.unpack('B', info_raw)[0]
+                            self.read_state = 2
+                        elif self.packet_type == "Test":
+                            u_raw = self.port.read(4)
+                            u_raw = struct.unpack('f', u_raw)[0] # Data bytes
                             self.read_state = 2
                     elif self.read_state == 2:
                         if self.packet_type == "PSoC res measurement":
@@ -399,6 +409,15 @@ class ReadWorker(QRunnable):
                                 logger.info("PSoC res sample rate changed to {} Hz.".format(PSOC_RES_SAMPLE_RATE))
                                 self.signals.data.emit(self.packet_type,[0])
                                 self.read_state = 0
+                        elif self.packet_type == "Test":
+                            test_tail = self.port.read(1)
+                            # Tail byte
+                            test_tail = struct.unpack('B', test_tail)[0]
+                            if (test_tail == 0x0F):
+                                # Handle data only if tail packet is correct
+                                u = self.truncate(u_raw, 3)
+                                self.signals.data.emit(self.packet_type,[u])
+                                self.read_state = 0                               
                 #time.sleep(0.001)
             except serial.SerialException:
                 self.signals.status.emit(self.port_name, 2)
@@ -422,6 +441,28 @@ class ReadWorker(QRunnable):
             logger.debug("Written {} on port {}.".format(char, self.port_name))
         except:
             logger.exception("Could not write {} on port {}.".format(char, self.port_name))
+
+
+    def truncate(self, number, digits) -> float:
+        """
+        This method is used to truncate the reconstructed float after 3 decimals.
+        This is necessay because floating point precision of Python is higher than C, and if a 3 decimal float
+        is sent to the GUI, once reconstructed it will have a lot more decimals, NOT PART OF THE ORIGINAL SIGNAL.
+
+        :param number: Number to be truncated.
+        :type char: float
+        :param digits: Number of digits to maintain.
+        :type digits: int
+
+        :returns: Truncated number of desired decimal precision.
+        :rtype: float
+        """
+        # Improve accuracy with floating point operations, to avoid truncate(16.4, 2) = 16.39 or truncate(-1.13, 2) = -1.12
+        nbDecimals = len(str(number).split('.')[1]) 
+        if nbDecimals <= digits:
+            return number
+        stepper = 10.0 ** digits
+        return math.trunc(stepper * number) / stepper
 
 
     def get_data(self, data_raw):
