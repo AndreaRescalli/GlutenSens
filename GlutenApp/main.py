@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         # Title and geometry
-        self.setWindowTitle("GlutenSense")
+        self.setWindowTitle("GlutenSens")
         width = 1000
         height = 800
         self.setMinimumSize(width, height)
