@@ -4,7 +4,7 @@
  * \brief Header file in charge of handling resistance measurements.
  *
  * \author Andrea Rescalli
- * \date   04/01/2023
+ * \date   01/12/2023
  *
  */
 
@@ -22,7 +22,7 @@
  * - IDAC indications: the higher the current the higher the accuracy, but it can induce 
  *   self heating --> IDAC off when not measuring to mitigate it
  *   N.B: Voltage at IDAC cannot exceed compliance voltage Vc = Vdd - 1V. In this case: 
- *               [w/ R_rout = 600 ohm | R_ref = 10125 ohm]
+ *               [w/ R_rout = 600 ohm | R_ref = 10010 ohm]
  *   Vc_sense  = I*(R_rout+(3*R_wires)+R_ref+R_sense)
  *   Being Vdd = 5V --> R_sense_MAX = (5V-1V)/I-(R_rout+(3*R_wires)+R_ref) 
  *               if we choose I = 50uA we can accept up to 69k ohm of load (of course 
@@ -83,7 +83,7 @@
     /**
     *   \brief Ohm value of the reference resistor.
     */    
-    #define REFERENCE_RESISTOR 10125
+    #define REFERENCE_RESISTOR 10010
     
 
     

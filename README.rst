@@ -4,8 +4,8 @@ Project description
 .. image:: https://readthedocs.org/projects/glutensense/badge/?version=latest
     :target: https://glutensense.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-This repository holds the code for **GlutenSense**, an open-source, microcontroller-based, portable instrument for easy gluten-free check of food samples, developed 
-during my PhD.
+This repository holds the code for **GlutenSens**, an open-source, microcontroller-based, portable instrument for easy gluten-free check of food samples, developed 
+during my PhD as part of a collaboration with the Department of Pharmacological and Biomolecular Sciences “Rodolfo Paoletti", Università degli Studi di Milano.
 
 The code is organzied in two directories: 
 
